@@ -1,0 +1,262 @@
+import { ToolCategory } from "./types";
+
+export const translations = {
+    vi: {
+        // UI Common
+        "app.name": "EasyConvert Hub",
+        "nav.home": "Trang chủ",
+        "nav.image": "Xử lý ảnh",
+        "nav.writer": "Viết bài AI",
+        "nav.video": "Video Tools",
+        "footer.desc": "Công cụ chuyển đổi file miễn phí tốt nhất. Bảo mật, nhanh chóng và không cần cài đặt.",
+        "footer.rights": "© 2024 EasyConvert Hub. Bảo lưu mọi quyền.",
+        
+        // Common Actions
+        "action.upload": "Tải lên",
+        "action.processing": "Đang xử lý...",
+        "action.download": "Tải về",
+        "action.choose_another": "Chọn file khác",
+        "action.error": "Có lỗi xảy ra",
+        "action.success": "Thành công!",
+        
+        // Ad & Premium Guard
+        "ad.label": "QC",
+        "ad.sponsor": "Nhà tài trợ",
+        "ad.status_complete": "Hoàn tất",
+        "ad.status_remaining": "Còn",
+        "ad.demo_title": "Quảng cáo mô phỏng",
+        "ad.demo_desc": "Đang phát quảng cáo để hỗ trợ duy trì server miễn phí...",
+        "ad.btn_cancel": "Hủy bỏ",
+        "ad.btn_skip": "Bỏ qua & Dùng Tool",
+        "ad.btn_wait": "Đợi",
+        
+        "premium.title": "Mở khóa tính năng",
+        "premium.sub": "Bạn đang truy cập công cụ cao cấp",
+        "premium.desc": "Công cụ này hoàn toàn miễn phí! Vui lòng xem một quảng cáo ngắn để giúp chúng tôi duy trì server.",
+        "premium.btn_watch": "Xem quảng cáo để mở khóa ngay",
+        "premium.footer": "Không cần đăng nhập • Sử dụng ngay lập tức",
+
+        // Home
+        "home.hero.badge": "Hơn 50+ công cụ miễn phí",
+        "home.hero.title": "Mọi công cụ bạn cần",
+        "home.hero.title_highlight": "ở cùng một nơi",
+        "home.hero.subtitle": "Xử lý PDF, hình ảnh, video, và AI tools cực nhanh. Không cần cài đặt. Không giới hạn.",
+        "home.search.placeholder": "Tìm công cụ (Ví dụ: PDF to Word, Nén ảnh...)",
+        "home.cat.all": "Tất cả",
+        "home.section.popular": "Công cụ phổ biến nhất",
+        "home.section.results": "Kết quả cho",
+        "home.no_results": "Không tìm thấy công cụ phù hợp.",
+        "home.view_all": "Xem tất cả công cụ",
+        "tool.action": "Dùng ngay",
+
+        // Categories
+        [`cat.${ToolCategory.IMAGE}`]: "Hình ảnh & AI",
+        [`cat.${ToolCategory.PDF}`]: "Tài liệu PDF",
+        [`cat.${ToolCategory.AI}`]: "AI Tools Hot",
+        [`cat.${ToolCategory.TEXT}`]: "Văn bản",
+        [`cat.${ToolCategory.VIDEO}`]: "Video & Âm thanh",
+        [`cat.${ToolCategory.UTILITY}`]: "Tiện ích & Năng suất",
+
+        // PAGE: PDF Merge
+        "page.pdf_merge.title": "Ghép file PDF",
+        "page.pdf_merge.sub": "Kết hợp nhiều file PDF thành một tài liệu duy nhất. Kéo thả để sắp xếp thứ tự.",
+        "page.pdf_merge.upload_title": "Chọn các file PDF",
+        "page.pdf_merge.upload_desc": "Nhấn để tải lên hoặc kéo thả vào đây",
+        "page.pdf_merge.btn_add": "Thêm file",
+        "page.pdf_merge.btn_merge": "Ghép file PDF",
+        "page.pdf_merge.btn_download": "Tải file đã ghép",
+        "page.pdf_merge.guide_1_t": "Nhanh & Bảo mật",
+        "page.pdf_merge.guide_1_d": "Xử lý trực tiếp trên trình duyệt. File không gửi đi đâu.",
+        "page.pdf_merge.guide_2_t": "Sắp xếp dễ dàng",
+        "page.pdf_merge.guide_2_d": "Tùy chỉnh thứ tự các trang PDF theo ý muốn.",
+        "page.pdf_merge.guide_3_t": "Miễn phí 100%",
+        "page.pdf_merge.guide_3_d": "Không giới hạn số lượng file, không cần đăng ký.",
+
+        // PAGE: PDF to Excel
+        "page.pdf_excel.title": "Chuyển đổi PDF sang Excel (AI)",
+        "page.pdf_excel.sub": "Sử dụng trí tuệ nhân tạo để nhận diện và trích xuất bảng biểu từ file PDF.",
+        "page.pdf_excel.upload_title": "Tải file PDF lên",
+        "page.pdf_excel.upload_desc": "Kéo thả hoặc nhấn để chọn file (Max 10MB)",
+        "page.pdf_excel.btn_start": "Bắt đầu chuyển đổi",
+        "page.pdf_excel.btn_download": "Tải file Excel (.csv)",
+        "page.pdf_excel.status_processing": "Vui lòng đợi, AI đang đọc tài liệu...",
+        "page.pdf_excel.preview": "Xem trước dữ liệu",
+
+        // PAGE: Image Converter
+        "page.img_convert.title": "Chuyển đổi & Nén ảnh",
+        "page.img_convert.sub": "Chuyển đổi JPG, PNG sang WebP hoặc nén dung lượng ảnh trực tiếp.",
+        "page.img_convert.upload_title": "Kéo thả hoặc chọn ảnh",
+        "page.img_convert.format_label": "Định dạng đầu ra",
+        "page.img_convert.quality_label": "Chất lượng (Nén)",
+        "page.img_convert.btn_convert": "Tải ảnh về",
+
+        // Tools List Names (Existing)
+        "tool.img_convert.name": "Chuyển đổi ảnh",
+        "tool.img_convert.desc": "Đổi đuôi ảnh sang JPG, PNG, WebP và nén giảm dung lượng.",
+        "tool.bg_remove.name": "Tách nền ảnh AI",
+        "tool.bg_remove.desc": "Xóa phông nền tự động trong 5 giây (Xem QC).",
+        "tool.img_compress.name": "Nén ảnh",
+        "tool.img_compress.desc": "Giảm dung lượng ảnh mà không giảm chất lượng.",
+        "tool.watermark.name": "Xóa Watermark",
+        "tool.watermark.desc": "Dùng AI xóa logo/chữ đóng dấu trên ảnh.",
+        
+        "tool.pdf_word.name": "PDF sang Word Pro",
+        "tool.pdf_word.desc": "Chuyển đổi file PDF sang Word giữ nguyên định dạng.",
+        "tool.pdf_excel.name": "PDF sang Excel",
+        "tool.pdf_excel.desc": "Trích xuất bảng tính từ PDF sang Excel (AI).",
+        "tool.pdf_merge.name": "Ghép file PDF",
+        "tool.pdf_merge.desc": "Gộp nhiều file PDF thành một file duy nhất.",
+        
+        "tool.ocr.name": "Scan ảnh ra chữ",
+        "tool.ocr.desc": "Trích xuất văn bản từ hình ảnh cực nhanh bằng Gemini AI.",
+        "tool.ai_writer.name": "AI Viết bài",
+        "tool.ai_writer.desc": "Tự động viết blog, caption Facebook, email.",
+        "tool.ai_summarize.name": "Tóm tắt văn bản",
+        "tool.ai_summarize.desc": "AI đọc và tóm tắt nội dung dài thành ngắn gọn.",
+        
+        "tool.word_counter.name": "Bộ đếm từ",
+        "tool.word_counter.desc": "Đếm số từ, ký tự, đoạn văn và thời gian đọc.",
+        "tool.password_gen.name": "Tạo mật khẩu",
+        "tool.password_gen.desc": "Tạo chuỗi mật khẩu mạnh ngẫu nhiên bảo mật cao.",
+        "tool.qr_gen.name": "Tạo mã QR",
+        "tool.qr_gen.desc": "Tạo mã QR cho link, wifi, văn bản miễn phí.",
+        "tool.calc_percent.name": "Tính phần trăm",
+        "tool.calc_percent.desc": "Công cụ tính % tăng giảm giá nhanh chóng.",
+        
+        "tool.video_convert.name": "Chuyển đổi Video",
+        "tool.video_convert.desc": "Convert MP4 sang MP3, AVI, MOV.",
+        "tool.speech_text.name": "Giọng nói thành chữ",
+        "tool.speech_text.desc": "Chuyển file ghi âm thành văn bản (Speech to Text).",
+        "tool.text_speech.name": "Văn bản thành giọng nói",
+        "tool.text_speech.desc": "AI đọc văn bản thành giọng nói tự nhiên (Text to Speech).",
+    },
+    en: {
+        // UI Common
+        "app.name": "EasyConvert Hub",
+        "nav.home": "Home",
+        "nav.image": "Image Tools",
+        "nav.writer": "AI Writer",
+        "nav.video": "Video Tools",
+        "footer.desc": "Best free file conversion tools. Secure, fast, and no installation required.",
+        "footer.rights": "© 2024 EasyConvert Hub. All rights reserved.",
+        
+        // Common Actions
+        "action.upload": "Upload",
+        "action.processing": "Processing...",
+        "action.download": "Download",
+        "action.choose_another": "Choose another file",
+        "action.error": "An error occurred",
+        "action.success": "Success!",
+
+        // Ad & Premium Guard
+        "ad.label": "Ad",
+        "ad.sponsor": "Sponsor",
+        "ad.status_complete": "Finished",
+        "ad.status_remaining": "Remaining",
+        "ad.demo_title": "Simulated Ad",
+        "ad.demo_desc": "Playing ad to support free server maintenance...",
+        "ad.btn_cancel": "Cancel",
+        "ad.btn_skip": "Skip & Use Tool",
+        "ad.btn_wait": "Wait",
+
+        "premium.title": "Unlock Feature",
+        "premium.sub": "You are accessing a premium tool",
+        "premium.desc": "This tool is 100% free! Please watch a short ad to help us maintain the servers.",
+        "premium.btn_watch": "Watch Ad to Unlock",
+        "premium.footer": "No login required • Instant access",
+
+        // Home
+        "home.hero.badge": "Over 50+ Free Tools",
+        "home.hero.title": "All tools you need",
+        "home.hero.title_highlight": "in one place",
+        "home.hero.subtitle": "Process PDF, images, video, and AI tools instantly. No install. Unlimited.",
+        "home.search.placeholder": "Search tools (e.g., PDF to Word, Compress Image...)",
+        "home.cat.all": "All",
+        "home.section.popular": "Most Popular",
+        "home.section.results": "Results for",
+        "home.no_results": "No matching tools found.",
+        "home.view_all": "View all tools",
+        "tool.action": "Use Now",
+
+        // Categories
+        [`cat.${ToolCategory.IMAGE}`]: "Image & AI",
+        [`cat.${ToolCategory.PDF}`]: "PDF Tools",
+        [`cat.${ToolCategory.AI}`]: "Hot AI Tools",
+        [`cat.${ToolCategory.TEXT}`]: "Text Tools",
+        [`cat.${ToolCategory.VIDEO}`]: "Video & Audio",
+        [`cat.${ToolCategory.UTILITY}`]: "Utility & Productivity",
+
+        // PAGE: PDF Merge
+        "page.pdf_merge.title": "Merge PDF Files",
+        "page.pdf_merge.sub": "Combine multiple PDF files into one single document. Drag and drop to reorder.",
+        "page.pdf_merge.upload_title": "Select PDF files",
+        "page.pdf_merge.upload_desc": "Click to upload or drag and drop here",
+        "page.pdf_merge.btn_add": "Add file",
+        "page.pdf_merge.btn_merge": "Merge PDF",
+        "page.pdf_merge.btn_download": "Download Merged PDF",
+        "page.pdf_merge.guide_1_t": "Fast & Secure",
+        "page.pdf_merge.guide_1_d": "Processed in your browser. Files are never uploaded.",
+        "page.pdf_merge.guide_2_t": "Easy Reorder",
+        "page.pdf_merge.guide_2_d": "Customize the order of PDF pages as you like.",
+        "page.pdf_merge.guide_3_t": "100% Free",
+        "page.pdf_merge.guide_3_d": "No file limits, no registration required.",
+
+        // PAGE: PDF to Excel
+        "page.pdf_excel.title": "PDF to Excel (AI)",
+        "page.pdf_excel.sub": "Use Artificial Intelligence to detect and extract tables from PDF files.",
+        "page.pdf_excel.upload_title": "Upload PDF file",
+        "page.pdf_excel.upload_desc": "Drag & drop or click to select (Max 10MB)",
+        "page.pdf_excel.btn_start": "Start Conversion",
+        "page.pdf_excel.btn_download": "Download Excel (.csv)",
+        "page.pdf_excel.status_processing": "Please wait, AI is analyzing the document...",
+        "page.pdf_excel.preview": "Data Preview",
+
+        // PAGE: Image Converter
+        "page.img_convert.title": "Convert & Compress Images",
+        "page.img_convert.sub": "Convert JPG, PNG to WebP or compress image size directly.",
+        "page.img_convert.upload_title": "Drag & drop or select image",
+        "page.img_convert.format_label": "Output Format",
+        "page.img_convert.quality_label": "Quality (Compression)",
+        "page.img_convert.btn_convert": "Download Image",
+
+        // Tools
+        "tool.img_convert.name": "Image Converter",
+        "tool.img_convert.desc": "Convert images to JPG, PNG, WebP and compress size.",
+        "tool.bg_remove.name": "AI Background Remover",
+        "tool.bg_remove.desc": "Remove background automatically in 5 seconds.",
+        "tool.img_compress.name": "Compress Image",
+        "tool.img_compress.desc": "Reduce image size without losing quality.",
+        "tool.watermark.name": "Remove Watermark",
+        "tool.watermark.desc": "Use AI to remove logos/watermarks from images.",
+        
+        "tool.pdf_word.name": "PDF to Word Pro",
+        "tool.pdf_word.desc": "Convert PDF to Word maintaining original formatting.",
+        "tool.pdf_excel.name": "PDF to Excel",
+        "tool.pdf_excel.desc": "Extract tables from PDF to Excel using AI.",
+        "tool.pdf_merge.name": "Merge PDF",
+        "tool.pdf_merge.desc": "Combine multiple PDF files into one.",
+        
+        "tool.ocr.name": "Image to Text (OCR)",
+        "tool.ocr.desc": "Extract text from images instantly using Gemini AI.",
+        "tool.ai_writer.name": "AI Writer",
+        "tool.ai_writer.desc": "Auto-write blogs, Facebook captions, emails.",
+        "tool.ai_summarize.name": "Text Summarizer",
+        "tool.ai_summarize.desc": "AI reads and summarizes long content into key points.",
+        
+        "tool.word_counter.name": "Word Counter",
+        "tool.word_counter.desc": "Count words, characters, paragraphs, and reading time.",
+        "tool.password_gen.name": "Password Generator",
+        "tool.password_gen.desc": "Generate strong, secure random passwords.",
+        "tool.qr_gen.name": "QR Code Generator",
+        "tool.qr_gen.desc": "Create QR codes for links, wifi, text for free.",
+        "tool.calc_percent.name": "Percentage Calculator",
+        "tool.calc_percent.desc": "Quickly calculate percentage increase/decrease.",
+        
+        "tool.video_convert.name": "Video Converter",
+        "tool.video_convert.desc": "Convert MP4 to MP3, AVI, MOV.",
+        "tool.speech_text.name": "Speech to Text",
+        "tool.speech_text.desc": "Convert audio recordings to text.",
+        "tool.text_speech.name": "Text to Speech",
+        "tool.text_speech.desc": "AI converts text to natural sounding speech.",
+    }
+};

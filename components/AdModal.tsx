@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X, PlayCircle, Clock } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface AdModalProps {
     isOpen: boolean;
@@ -10,6 +11,7 @@ interface AdModalProps {
 export const AdModal: React.FC<AdModalProps> = ({ isOpen, onClose, onComplete }) => {
     const [timeLeft, setTimeLeft] = useState(5); // 5 seconds ad
     const [canSkip, setCanSkip] = useState(false);
+    const { t } = useLanguage();
 
     useEffect(() => {
         if (!isOpen) {
@@ -41,16 +43,16 @@ export const AdModal: React.FC<AdModalProps> = ({ isOpen, onClose, onComplete })
                 {/* Header / Timer */}
                 <div className="bg-slate-900 text-white p-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
-                        <span className="bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded">Ad</span>
-                        <span className="text-sm font-medium">Nhà tài trợ</span>
+                        <span className="bg-yellow-500 text-black text-xs font-bold px-2 py-0.5 rounded">{t('ad.label')}</span>
+                        <span className="text-sm font-medium">{t('ad.sponsor')}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm font-mono text-slate-300">
                         {canSkip ? (
-                            <span className="text-green-400 font-bold">Hoàn tất</span>
+                            <span className="text-green-400 font-bold">{t('ad.status_complete')}</span>
                         ) : (
                             <>
                                 <Clock className="w-4 h-4" />
-                                Còn {timeLeft}s
+                                {t('ad.status_remaining')} {timeLeft}s
                             </>
                         )}
                     </div>
@@ -61,9 +63,9 @@ export const AdModal: React.FC<AdModalProps> = ({ isOpen, onClose, onComplete })
                     <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4 animate-bounce">
                         <PlayCircle className="w-8 h-8" />
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 mb-2">Quảng cáo mô phỏng</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">{t('ad.demo_title')}</h3>
                     <p className="text-slate-500 text-sm">
-                        Đang phát quảng cáo để hỗ trợ duy trì server miễn phí...
+                        {t('ad.demo_desc')}
                     </p>
                 </div>
 
@@ -73,7 +75,7 @@ export const AdModal: React.FC<AdModalProps> = ({ isOpen, onClose, onComplete })
                         onClick={onClose}
                         className="px-4 py-2 text-slate-500 hover:text-slate-700 font-medium text-sm"
                     >
-                        Hủy bỏ
+                        {t('ad.btn_cancel')}
                     </button>
                     <button 
                         onClick={onComplete}
@@ -84,7 +86,7 @@ export const AdModal: React.FC<AdModalProps> = ({ isOpen, onClose, onComplete })
                             : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                         }`}
                     >
-                        {canSkip ? 'Bỏ qua & Dùng Tool' : `Đợi ${timeLeft}s...`}
+                        {canSkip ? t('ad.btn_skip') : `${t('ad.btn_wait')} ${timeLeft}s...`}
                     </button>
                 </div>
             </div>

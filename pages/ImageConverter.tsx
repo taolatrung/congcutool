@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Upload, Download, RefreshCw, Settings, Check } from 'lucide-react';
 import { ProcessingState } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 export const ImageConverter: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
@@ -9,6 +10,7 @@ export const ImageConverter: React.FC = () => {
     const [quality, setQuality] = useState(0.8);
     const [state, setState] = useState<ProcessingState>({ status: 'idle' });
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const { t } = useLanguage();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -48,7 +50,7 @@ export const ImageConverter: React.FC = () => {
             link.href = dataUrl;
             link.click();
 
-            setState({ status: 'success', message: 'Chuyển đổi thành công!' });
+            setState({ status: 'success', message: t('action.success') });
         };
         img.src = URL.createObjectURL(file);
     };
@@ -57,8 +59,8 @@ export const ImageConverter: React.FC = () => {
         <div className="max-w-4xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
                 <div className="p-8 border-b border-slate-100">
-                    <h1 className="text-2xl font-bold text-slate-900 mb-2">Chuyển đổi & Nén ảnh</h1>
-                    <p className="text-slate-500">Chuyển đổi JPG, PNG sang WebP hoặc nén dung lượng ảnh trực tiếp trên trình duyệt.</p>
+                    <h1 className="text-2xl font-bold text-slate-900 mb-2">{t('page.img_convert.title')}</h1>
+                    <p className="text-slate-500">{t('page.img_convert.sub')}</p>
                 </div>
 
                 <div className="p-8 space-y-8">
@@ -74,8 +76,8 @@ export const ImageConverter: React.FC = () => {
                             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-50 text-brand-600 mb-4">
                                 <Upload className="w-8 h-8" />
                             </div>
-                            <h3 className="text-lg font-medium text-slate-900 mb-1">Kéo thả hoặc chọn ảnh</h3>
-                            <p className="text-sm text-slate-500">Hỗ trợ JPG, PNG, WebP (Tối đa 10MB)</p>
+                            <h3 className="text-lg font-medium text-slate-900 mb-1">{t('page.img_convert.upload_title')}</h3>
+                            <p className="text-sm text-slate-500">JPG, PNG, WebP (Max 10MB)</p>
                         </div>
                     )}
 
@@ -92,14 +94,14 @@ export const ImageConverter: React.FC = () => {
                                     className="text-sm text-red-500 hover:text-red-600 font-medium flex items-center justify-center w-full"
                                 >
                                     <RefreshCw className="w-4 h-4 mr-2" />
-                                    Chọn ảnh khác
+                                    {t('action.choose_another')}
                                 </button>
                             </div>
 
                             {/* Controls */}
                             <div className="space-y-6">
                                 <div className="space-y-4">
-                                    <label className="block text-sm font-medium text-slate-700">Định dạng đầu ra</label>
+                                    <label className="block text-sm font-medium text-slate-700">{t('page.img_convert.format_label')}</label>
                                     <div className="grid grid-cols-3 gap-3">
                                         {(['image/jpeg', 'image/png', 'image/webp'] as const).map((f) => (
                                             <button
@@ -119,7 +121,7 @@ export const ImageConverter: React.FC = () => {
 
                                 <div className="space-y-4">
                                     <label className="block text-sm font-medium text-slate-700 flex justify-between">
-                                        Chất lượng (Nén)
+                                        {t('page.img_convert.quality_label')}
                                         <span className="text-brand-600">{Math.round(quality * 100)}%</span>
                                     </label>
                                     <input 
@@ -141,12 +143,12 @@ export const ImageConverter: React.FC = () => {
                                     {state.status === 'processing' ? (
                                         <>
                                             <RefreshCw className="w-5 h-5 mr-2 animate-spin" />
-                                            Đang xử lý...
+                                            {t('action.processing')}
                                         </>
                                     ) : (
                                         <>
                                             <Download className="w-5 h-5 mr-2" />
-                                            Tải ảnh về
+                                            {t('page.img_convert.btn_convert')}
                                         </>
                                     )}
                                 </button>

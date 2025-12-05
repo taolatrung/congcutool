@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Lock, PlayCircle } from 'lucide-react';
 import { ToolDef } from '../types';
 import { AdModal } from './AdModal';
+import { useLanguage } from '../context/LanguageContext';
 
 interface Props {
     tool: ToolDef;
@@ -11,6 +12,7 @@ interface Props {
 export const PremiumGuard: React.FC<Props> = ({ tool, children }) => {
     const [isUnlocked, setIsUnlocked] = useState(false);
     const [showAd, setShowAd] = useState(false);
+    const { t } = useLanguage();
 
     // --- LOGIC: ALREADY UNLOCKED (Ad watched) ---
     if (isUnlocked) return <>{children}</>;
@@ -22,6 +24,9 @@ export const PremiumGuard: React.FC<Props> = ({ tool, children }) => {
         setShowAd(false);
         setIsUnlocked(true);
     };
+
+    // Helper to get tool name (translated if available)
+    const toolName = t(`tool.${tool.translationKey}.name`) || tool.name;
 
     return (
         <div className="max-w-4xl mx-auto py-12 px-4">
@@ -37,9 +42,9 @@ export const PremiumGuard: React.FC<Props> = ({ tool, children }) => {
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-4 backdrop-blur-sm">
                         <Lock className="w-10 h-10 text-amber-400" />
                     </div>
-                    <h2 className="text-2xl font-bold mb-2">Mở khóa tính năng</h2>
+                    <h2 className="text-2xl font-bold mb-2">{t('premium.title')}</h2>
                     <p className="text-slate-300">
-                        Bạn đang truy cập công cụ cao cấp <span className="text-white font-bold block mt-1 text-lg">{tool.name}</span>
+                        {t('premium.sub')} <span className="text-white font-bold block mt-1 text-lg">{toolName}</span>
                     </p>
                 </div>
 
@@ -47,7 +52,7 @@ export const PremiumGuard: React.FC<Props> = ({ tool, children }) => {
                 <div className="p-8">
                     <div className="text-center space-y-6">
                             <p className="text-slate-600">
-                            Công cụ này hoàn toàn miễn phí! Vui lòng xem một quảng cáo ngắn để giúp chúng tôi duy trì server.
+                            {t('premium.desc')}
                         </p>
                         
                         <button 
@@ -55,11 +60,11 @@ export const PremiumGuard: React.FC<Props> = ({ tool, children }) => {
                             className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-brand-200 transition-all hover:-translate-y-1 flex items-center justify-center gap-3"
                         >
                             <PlayCircle className="w-6 h-6" />
-                            Xem quảng cáo để mở khóa ngay
+                            {t('premium.btn_watch')}
                         </button>
                         
                         <p className="text-xs text-slate-400">
-                            Không cần đăng nhập • Sử dụng ngay lập tức
+                            {t('premium.footer')}
                         </p>
                     </div>
                 </div>

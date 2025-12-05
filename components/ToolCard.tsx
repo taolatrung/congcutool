@@ -2,6 +2,7 @@ import React from 'react';
 import { ToolDef } from '../types';
 import { ArrowRight, Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ToolCardProps {
     tool: ToolDef;
@@ -9,6 +10,10 @@ interface ToolCardProps {
 
 export const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
     const Icon = tool.icon;
+    const { t } = useLanguage();
+
+    const name = t(`tool.${tool.translationKey}.name`) || tool.name;
+    const desc = t(`tool.${tool.translationKey}.desc`) || tool.description;
 
     return (
         <Link 
@@ -25,13 +30,13 @@ export const ToolCard: React.FC<ToolCardProps> = ({ tool }) => {
                 <Icon className="w-6 h-6 text-brand-600 group-hover:text-white transition-colors" />
             </div>
             
-            <h3 className="text-lg font-bold text-slate-800 mb-2">{tool.name}</h3>
+            <h3 className="text-lg font-bold text-slate-800 mb-2">{name}</h3>
             <p className="text-sm text-slate-500 mb-4 line-clamp-2 flex-grow">
-                {tool.description}
+                {desc}
             </p>
             
             <div className="flex items-center text-brand-600 font-medium text-sm mt-auto">
-                Dùng ngay
+                {t('tool.action')}
                 <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
             </div>
         </Link>

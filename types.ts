@@ -1,5 +1,7 @@
 import { LucideIcon } from 'lucide-react';
 
+export type Language = 'vi' | 'en';
+
 export enum ToolCategory {
     IMAGE = 'Hình ảnh & AI',
     PDF = 'Tài liệu PDF',
@@ -12,8 +14,9 @@ export enum ToolCategory {
 
 export interface ToolDef {
     id: string;
-    name: string;
-    description: string;
+    name: string; // Default/Fallback name
+    description: string; // Default/Fallback description
+    translationKey: string; // Key for i18n
     icon: LucideIcon;
     category: ToolCategory;
     path: string;

@@ -91,6 +91,40 @@ export const performOCR = async (base64Image: string, mimeType: string): Promise
     }
 };
 
+export const extractTableFromPdf = async (base64Pdf: string): Promise<string> => {
+    try {
+        const model = 'gemini-2.5-flash';
+
+        const response = await ai.models.generateContent({
+            model: model,
+            contents: {
+                parts: [
+                    {
+                        text: "Analyze this PDF document. Identify all tabular data. Extract the data and output it strictly as CSV format (Comma Separated Values). If there are multiple tables, merge them if they have the same structure, or separate them with a blank line. Do not include markdown code blocks (like ```csv). Just raw CSV data."
+                    },
+                    {
+                        inlineData: {
+                            mimeType: 'application/pdf',
+                            data: base64Pdf
+                        }
+                    }
+                ]
+            }
+        });
+
+        let text = response.text || "";
+        // Clean up markdown if Gemini adds it despite instructions
+        text = text.replace(/^```csv\n/, '').replace(/^```\n/, '').replace(/\n```$/, '');
+        
+        if (!text.trim()) throw new Error("Không tìm thấy dữ liệu bảng trong file.");
+        
+        return text;
+    } catch (error) {
+        console.error("PDF to Excel Error:", error);
+        throw new Error("Lỗi khi xử lý file PDF. Vui lòng đảm bảo file không có mật khẩu.");
+    }
+};
+
 export const generateSmartRename = async (textContext: string): Promise<string> => {
      try {
         const model = 'gemini-2.5-flash';
