@@ -1,25 +1,14 @@
-import { User, Transaction } from '../types';
+import { User } from '../types';
 
 // STORAGE KEYS
 const USERS_KEY = 'ech_users';
-const TRANSACTIONS_KEY = 'ech_transactions';
 const SESSION_KEY = 'ech_session';
 
 // --- HELPERS ---
 const getUsers = (): User[] => JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
 const saveUsers = (users: User[]) => localStorage.setItem(USERS_KEY, JSON.stringify(users));
 
-const getTransactions = (): Transaction[] => JSON.parse(localStorage.getItem(TRANSACTIONS_KEY) || '[]');
-const saveTransactions = (txs: Transaction[]) => localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(txs));
-
 const mockDelay = (ms = 800) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Helper to check VIP validity
-export const isUserVip = (user: User | null): boolean => {
-    if (!user || !user.vipUntil) return false;
-    const expireDate = new Date(user.vipUntil);
-    return expireDate > new Date();
-};
 
 // --- AUTH SERVICES ---
 
@@ -48,9 +37,8 @@ export const apiRegister = async (email: string, password: string, name: string)
         id: 'user_' + Date.now(),
         email,
         name,
-        balance: 0, 
-        vipUntil: null, // Init as non-VIP
         createdAt: new Date().toISOString(),
+        balance: 0,
         // In real app: hash password here
         ...({ password } as any) 
     };
@@ -76,114 +64,55 @@ export const apiGetProfile = async (): Promise<User | null> => {
     return users.find(u => u.id === sessionUser.id) || null;
 };
 
-// --- WALLET & PAYMENT SERVICES ---
-
 export const apiTopUp = async (userId: string, amount: number, method: string): Promise<User> => {
-    await mockDelay(1500); 
-    
+    await mockDelay();
     const users = getUsers();
     const userIndex = users.findIndex(u => u.id === userId);
     
     if (userIndex === -1) throw new Error("User not found");
+    
+    if (typeof users[userIndex].balance !== 'number') {
+        users[userIndex].balance = 0;
+    }
 
     users[userIndex].balance += amount;
     saveUsers(users);
-
-    const tx: Transaction = {
-        id: 'tx_' + Date.now(),
-        userId,
-        type: 'DEPOSIT',
-        amount,
-        description: `Nạp tiền qua ${method}`,
-        status: 'SUCCESS',
-        createdAt: new Date().toISOString()
-    };
-    const txs = getTransactions();
-    txs.unshift(tx); 
-    saveTransactions(txs);
-
-    localStorage.setItem(SESSION_KEY, JSON.stringify(users[userIndex]));
-    return users[userIndex];
-};
-
-export const apiDeduct = async (userId: string, amount: number, toolName: string): Promise<User> => {
-    await mockDelay(500);
-    const users = getUsers();
-    const userIndex = users.findIndex(u => u.id === userId);
     
-    if (userIndex === -1) throw new Error("User not found");
-    
-    if (users[userIndex].balance < amount) {
-        throw new Error("Số dư không đủ. Vui lòng nạp thêm.");
+    // Update session if it matches
+    const sessionUser = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+    if (sessionUser && sessionUser.id === userId) {
+         localStorage.setItem(SESSION_KEY, JSON.stringify(users[userIndex]));
     }
-
-    users[userIndex].balance -= amount;
-    saveUsers(users);
-
-    const tx: Transaction = {
-        id: 'tx_' + Date.now(),
-        userId,
-        type: 'SPEND',
-        amount: -amount,
-        description: `Sử dụng tool: ${toolName}`,
-        status: 'SUCCESS',
-        createdAt: new Date().toISOString()
-    };
-    const txs = getTransactions();
-    txs.unshift(tx);
-    saveTransactions(txs);
-
-    localStorage.setItem(SESSION_KEY, JSON.stringify(users[userIndex]));
+    
     return users[userIndex];
 };
 
-export const apiBuyVip = async (userId: string, days: number, price: number, planName: string): Promise<User> => {
-    await mockDelay(1000);
+export const apiBuyVip = async (userId: string, durationDays: number, price: number, planName: string): Promise<User> => {
+    await mockDelay();
     const users = getUsers();
     const userIndex = users.findIndex(u => u.id === userId);
+    
     if (userIndex === -1) throw new Error("User not found");
+    
     const user = users[userIndex];
+    if ((user.balance || 0) < price) throw new Error("Số dư không đủ");
 
-    if (user.balance < price) {
-        throw new Error("Số dư không đủ để đăng ký VIP.");
-    }
-
-    // Deduct money
-    user.balance -= price;
-
-    // Calculate VIP expiration
-    const currentExpiry = user.vipUntil ? new Date(user.vipUntil) : new Date();
+    user.balance = (user.balance || 0) - price;
+    
     const now = new Date();
-    // If current expiry is in the past, start from now. Otherwise add to existing.
-    const startDate = currentExpiry > now ? currentExpiry : now;
+    const currentExpiry = user.vipExpiry ? new Date(user.vipExpiry) : now;
+    // If expired, start from now. If active, add to expiry.
+    const startTime = currentExpiry > now ? currentExpiry : now;
+    startTime.setDate(startTime.getDate() + durationDays);
     
-    const newExpiry = new Date(startDate);
-    newExpiry.setDate(newExpiry.getDate() + days);
+    user.vipExpiry = startTime.toISOString();
     
-    user.vipUntil = newExpiry.toISOString();
-
     saveUsers(users);
-
-    // Log Transaction
-    const tx: Transaction = {
-        id: 'tx_vip_' + Date.now(),
-        userId,
-        type: 'VIP_PURCHASE',
-        amount: -price,
-        description: `Đăng ký gói VIP: ${planName}`,
-        status: 'SUCCESS',
-        createdAt: new Date().toISOString()
-    };
-    const txs = getTransactions();
-    txs.unshift(tx);
-    saveTransactions(txs);
-
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+     // Update session
+    const sessionUser = JSON.parse(localStorage.getItem(SESSION_KEY) || '{}');
+    if (sessionUser && sessionUser.id === userId) {
+         localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    }
+    
     return user;
-}
-
-export const apiGetTransactions = async (userId: string): Promise<Transaction[]> => {
-    await mockDelay(300);
-    const txs = getTransactions();
-    return txs.filter(t => t.userId === userId);
 };

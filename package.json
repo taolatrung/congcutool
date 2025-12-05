@@ -14,7 +14,8 @@
     "react-router-dom": "^7.10.1",
     "lucide-react": "^0.555.0",
     "@google/genai": "^1.31.0",
-    "@imgly/background-removal": "1.5.5"
+    "@imgly/background-removal": "1.5.5",
+    "qrcode": "1.5.3"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

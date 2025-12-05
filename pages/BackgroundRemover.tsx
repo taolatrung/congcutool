@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
-import { Upload, Download, RefreshCw, Layers, Image as ImageIcon, Check, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Upload, Download, RefreshCw, Layers, Image as ImageIcon, Check, AlertTriangle, Settings, Server } from 'lucide-react';
 // Import as namespace to inspect structure
 import * as imglyLib from "@imgly/background-removal";
 import { ProcessingState } from '../types';
+
+type CDNType = 'jsdelivr' | 'unpkg' | 'imgly';
+
+const CDN_OPTIONS: Record<CDNType, { name: string; url: string; description: string }> = {
+    jsdelivr: { 
+        name: 'Server 1 (JSDelivr)', 
+        url: 'https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.5.5/dist/',
+        description: 'Server quốc tế ổn định (Khuyên dùng).'
+    },
+    unpkg: { 
+        name: 'Server 2 (Unpkg)', 
+        url: 'https://unpkg.com/@imgly/background-removal-data@1.5.5/dist/',
+        description: 'Server dự phòng tốc độ cao.'
+    },
+    imgly: { 
+        name: 'Server 3 (Img.ly)', 
+        url: 'https://static.img.ly/background-removal-data/1.5.5/dist/',
+        description: 'Server gốc (Có thể bị chặn bởi AdBlock).'
+    }
+};
 
 export const BackgroundRemover: React.FC = () => {
     const [file, setFile] = useState<File | null>(null);
@@ -10,6 +30,17 @@ export const BackgroundRemover: React.FC = () => {
     const [processedUrl, setProcessedUrl] = useState<string | null>(null);
     const [state, setState] = useState<ProcessingState>({ status: 'idle' });
     const [progressText, setProgressText] = useState('');
+    // Use jsdelivr as default
+    const [activeCDN, setActiveCDN] = useState<CDNType>('jsdelivr');
+    const [showSettings, setShowSettings] = useState(false);
+
+    // Cleanup object URL on unmount
+    useEffect(() => {
+        return () => {
+            if (originalUrl) URL.revokeObjectURL(originalUrl);
+            if (processedUrl) URL.revokeObjectURL(processedUrl);
+        };
+    }, [originalUrl, processedUrl]);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -22,46 +53,48 @@ export const BackgroundRemover: React.FC = () => {
     };
 
     const processImage = async () => {
-        if (!file || !originalUrl) return;
+        if (!file) return;
 
         setState({ status: 'processing' });
-        setProgressText('Đang khởi tạo AI (có thể mất 10-30s lần đầu)...');
+        setProgressText('Đang kết nối đến Server AI...');
 
         try {
-            // --- FIX: Resolve the correct function from the imported library ---
+            // --- Resolve the correct function from the imported library ---
             let removeBackgroundFn: any = imglyLib;
-            
-            // Check if default export is the function (common in JSDelivr bundles)
             if (typeof removeBackgroundFn !== 'function') {
                 if (removeBackgroundFn.default && typeof removeBackgroundFn.default === 'function') {
                     removeBackgroundFn = removeBackgroundFn.default;
-                } 
-                // Check for named export
-                else if (removeBackgroundFn.removeBackground && typeof removeBackgroundFn.removeBackground === 'function') {
+                } else if (removeBackgroundFn.removeBackground && typeof removeBackgroundFn.removeBackground === 'function') {
                     removeBackgroundFn = removeBackgroundFn.removeBackground;
                 }
             }
-
             if (typeof removeBackgroundFn !== 'function') {
-                throw new Error("Không thể tìm thấy hàm xử lý AI (Import failed).");
+                throw new Error("Lỗi tải thư viện AI (Import failed).");
             }
-            // -----------------------------------------------------------------
+            // -----------------------------------------------------------
 
             const config = {
-                publicPath: 'https://static.img.ly/background-removal-data/1.5.5/', 
+                publicPath: CDN_OPTIONS[activeCDN].url,
+                // Pass the File object directly to avoid blob URL CORS issues in workers
                 progress: (key: string, current: number, total: number) => {
+                    // Normalize progress for better UX
                     if (key.includes('fetch')) {
                          const percent = total > 0 ? Math.round((current / total) * 100) : 0;
-                         setProgressText(`Đang tải dữ liệu mô hình: ${percent}%`);
+                         setProgressText(`Đang tải dữ liệu (${percent}%)...`);
                     } else if (key.includes('compute')) {
                          const percent = total > 0 ? Math.round((current / total) * 100) : 0;
-                         setProgressText(`Đang tách nền: ${percent > 0 ? percent + '%' : '...'}`);
+                         setProgressText(`AI đang xử lý (${percent}%)...`);
                     }
                 },
-                debug: true
+                debug: true,
+                fetch: (url: string, options?: RequestInit) => {
+                    // Custom fetch to handle potential retries or logging if needed
+                    return fetch(url, { ...options, mode: 'cors' });
+                }
             };
 
-            const blob = await removeBackgroundFn(originalUrl, config);
+            // Pass file directly instead of URL string
+            const blob = await removeBackgroundFn(file, config);
             const url = URL.createObjectURL(blob);
             
             setProcessedUrl(url);
@@ -69,18 +102,19 @@ export const BackgroundRemover: React.FC = () => {
         } catch (error: any) {
             console.error("BG Removal Error:", error);
             let userMsg = 'Lỗi khi xử lý hình ảnh.';
+            const errStr = error.toString();
             
-            if (error.message?.includes('fetch')) {
-                userMsg = 'Không thể tải mô hình AI. Vui lòng kiểm tra kết nối mạng.';
-            } else if (error.message?.includes('memory')) {
+            if (errStr.includes('fetch') || errStr.includes('NetworkError') || errStr.includes('Failed to fetch')) {
+                userMsg = `Không thể tải dữ liệu từ ${CDN_OPTIONS[activeCDN].name}. Có thể do mạng hoặc AdBlock.`;
+            } else if (errStr.includes('Resource metadata') || errStr.includes('404')) {
+                userMsg = `Không tìm thấy file mô hình trên ${CDN_OPTIONS[activeCDN].name}.`;
+            } else if (errStr.includes('memory') || errStr.includes('OOM')) {
                 userMsg = 'Trình duyệt không đủ bộ nhớ. Hãy thử ảnh nhỏ hơn.';
-            } else if (error.message?.includes('Import failed')) {
-                userMsg = 'Lỗi tải thư viện AI. Vui lòng làm mới trang.';
             }
 
             setState({ 
                 status: 'error', 
-                message: `${userMsg} (${error.message || 'Unknown'})` 
+                message: userMsg
             });
         }
     };
@@ -95,18 +129,69 @@ export const BackgroundRemover: React.FC = () => {
         document.body.removeChild(link);
     };
 
+    const switchToNextCDN = () => {
+        let next: CDNType = 'jsdelivr';
+        if (activeCDN === 'jsdelivr') next = 'unpkg';
+        else if (activeCDN === 'unpkg') next = 'imgly';
+        
+        setActiveCDN(next);
+        setState({ status: 'idle' });
+        // Optional: Trigger process again automatically
+        // setTimeout(() => processImage(), 100); 
+    };
+
     return (
         <div className="max-w-5xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden">
                 {/* Header */}
-                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-violet-50 to-white">
-                    <h1 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
-                        <Layers className="w-6 h-6 text-violet-600" />
-                        Tách nền ảnh AI
-                    </h1>
-                    <p className="text-slate-500">
-                        Xóa phông nền tự động với độ chính xác cao ngay trên trình duyệt.
-                    </p>
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-violet-50 to-white flex justify-between items-start">
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2">
+                            <Layers className="w-6 h-6 text-violet-600" />
+                            Tách nền ảnh AI
+                        </h1>
+                        <p className="text-slate-500">
+                            Xóa phông nền tự động với độ chính xác cao ngay trên trình duyệt.
+                        </p>
+                    </div>
+                    
+                    <div className="relative">
+                        <button 
+                            onClick={() => setShowSettings(!showSettings)}
+                            className="p-2 text-slate-400 hover:text-brand-600 hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-1"
+                            title="Cài đặt Server"
+                        >
+                            <span className="text-xs font-medium text-slate-500 hidden sm:inline">{CDN_OPTIONS[activeCDN].name}</span>
+                            <Settings className="w-5 h-5" />
+                        </button>
+                        
+                        {showSettings && (
+                            <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-xl shadow-xl border border-slate-100 p-4 z-20 animate-fade-in-up">
+                                <h4 className="font-bold text-slate-800 mb-3 text-sm flex items-center gap-2">
+                                    <Server className="w-4 h-4" /> Nguồn dữ liệu AI (CDN)
+                                </h4>
+                                <div className="space-y-2">
+                                    {(Object.keys(CDN_OPTIONS) as CDNType[]).map((key) => (
+                                        <button
+                                            key={key}
+                                            onClick={() => { setActiveCDN(key); setShowSettings(false); setState({ status: 'idle' }); }}
+                                            className={`w-full text-left p-3 rounded-lg text-xs transition-colors border ${
+                                                activeCDN === key 
+                                                ? 'bg-violet-50 border-violet-200 text-violet-700' 
+                                                : 'hover:bg-slate-50 border-transparent text-slate-600'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="font-bold mb-0.5">{CDN_OPTIONS[key].name}</div>
+                                                {activeCDN === key && <Check className="w-4 h-4" />}
+                                            </div>
+                                            <div className="opacity-80">{CDN_OPTIONS[key].description}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 <div className="p-8 space-y-8">
@@ -151,7 +236,7 @@ export const BackgroundRemover: React.FC = () => {
                                             <div className="text-center px-4 w-full">
                                                 <div className="w-10 h-10 border-4 border-slate-200 border-t-violet-600 rounded-full animate-spin mx-auto mb-3"></div>
                                                 <p className="text-sm text-slate-600 font-medium animate-pulse">{progressText}</p>
-                                                <p className="text-xs text-slate-400 mt-2">Đang xử lý cục bộ trên thiết bị của bạn.</p>
+                                                <p className="text-xs text-slate-400 mt-2">Server đang dùng: {CDN_OPTIONS[activeCDN].name}</p>
                                             </div>
                                         ) : processedUrl ? (
                                             <img src={processedUrl} alt="Processed" className="max-w-full max-h-full object-contain" />
@@ -192,13 +277,22 @@ export const BackgroundRemover: React.FC = () => {
                             </div>
 
                             {state.status === 'error' && (
-                                <div className="p-4 bg-red-50 border border-red-100 text-red-700 rounded-xl text-sm flex items-start gap-3">
-                                    <AlertTriangle className="w-5 h-5 flex-shrink-0" />
-                                    <div>
-                                        <p className="font-bold">Đã xảy ra lỗi</p>
-                                        <p>{state.message}</p>
-                                        <p className="mt-2 text-xs text-red-500">Gợi ý: Hãy thử tải lại trang hoặc sử dụng trình duyệt Chrome/Edge mới nhất.</p>
+                                <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between animate-fade-in-up">
+                                    <div className="flex gap-3">
+                                        <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0" />
+                                        <div className="text-sm">
+                                            <p className="font-bold text-red-700 mb-1">{state.message}</p>
+                                            <p className="text-red-600 mb-1">
+                                                Hãy thử đổi sang Server khác.
+                                            </p>
+                                        </div>
                                     </div>
+                                    <button 
+                                        onClick={switchToNextCDN}
+                                        className="px-4 py-2 bg-white border border-red-200 text-red-700 font-bold rounded-lg text-sm hover:bg-red-50 transition-colors whitespace-nowrap shadow-sm"
+                                    >
+                                        Đổi Server ngay
+                                    </button>
                                 </div>
                             )}
                         </div>

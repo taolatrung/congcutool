@@ -20,8 +20,7 @@ export interface ToolDef {
     isNew?: boolean;
     isPopular?: boolean;
     comingSoon?: boolean;
-    isPremium?: boolean; // Marks a tool as Paid/Ad-gated
-    price?: number;      // Cost per use (default 1000 if not set)
+    isPremium?: boolean; // Requires watching Ad
 }
 
 export interface ProcessingState {
@@ -30,32 +29,14 @@ export interface ProcessingState {
     progress?: number;
 }
 
-// --- NEW AUTH TYPES ---
-
 export interface User {
     id: string;
     email: string;
     name: string;
-    balance: number; // Stored in VND
     avatarUrl?: string;
-    vipUntil?: string | null; // Date ISO string. If present and future, user is VIP
     createdAt: string;
-}
-
-export interface Transaction {
-    id: string;
-    userId: string;
-    type: 'DEPOSIT' | 'SPEND' | 'VIP_PURCHASE';
-    amount: number;
-    description: string;
-    status: 'SUCCESS' | 'PENDING' | 'FAILED';
-    createdAt: string;
-}
-
-export interface AuthState {
-    user: User | null;
-    isAuthenticated: boolean;
-    isLoading: boolean;
+    balance: number;
+    vipExpiry?: string;
 }
 
 export interface VipPlan {
@@ -65,4 +46,10 @@ export interface VipPlan {
     price: number;
     description: string;
     isPopular?: boolean;
+}
+
+export interface AuthState {
+    user: User | null;
+    isAuthenticated: boolean;
+    isLoading: boolean;
 }

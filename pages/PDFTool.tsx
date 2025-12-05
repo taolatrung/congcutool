@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileType, Lock, ArrowRight } from 'lucide-react';
+import { FileType, Lock, ArrowRight, PlayCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const PDFTool: React.FC = () => {
@@ -18,22 +18,22 @@ export const PDFTool: React.FC = () => {
 
                 <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-10">
                     <div className="p-6 border border-slate-200 rounded-xl bg-slate-50">
-                        <h3 className="font-bold text-slate-800 mb-2">Bản Miễn phí</h3>
+                        <h3 className="font-bold text-slate-800 mb-2">Bản Cơ Bản</h3>
                         <ul className="text-sm text-slate-600 space-y-2 text-left">
-                            <li>• Chuyển đổi tối đa 3 trang</li>
+                            <li>• OCR Cơ bản</li>
                             <li>• Chỉ trích xuất văn bản thô</li>
-                            <li>• Có quảng cáo</li>
+                            <li>• Miễn phí hoàn toàn</li>
                         </ul>
                     </div>
                     <div className="p-6 border-2 border-brand-500 rounded-xl bg-white relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-brand-500 text-white text-xs px-2 py-1 rounded-bl">Premium</div>
+                        <div className="absolute top-0 right-0 bg-brand-500 text-white text-xs px-2 py-1 rounded-bl">Ad Supported</div>
                         <h3 className="font-bold text-brand-700 mb-2 flex items-center gap-2">
-                            <Lock className="w-4 h-4" /> Bản Pro
+                            <PlayCircle className="w-4 h-4" /> Bản Nâng Cao
                         </h3>
                         <ul className="text-sm text-slate-600 space-y-2 text-left">
-                            <li>• Không giới hạn số trang</li>
-                            <li>• Giữ nguyên Layout & Font</li>
-                            <li>• Không quảng cáo</li>
+                            <li>• AI nhận diện chính xác 99%</li>
+                            <li>• Giữ nguyên cấu trúc đoạn văn</li>
+                            <li>• <strong>Miễn phí (Xem 1 quảng cáo)</strong></li>
                         </ul>
                     </div>
                 </div>
@@ -42,7 +42,7 @@ export const PDFTool: React.FC = () => {
                     to="/ocr" 
                     className="inline-flex items-center px-8 py-4 bg-brand-600 text-white font-bold rounded-xl hover:bg-brand-700 transition-colors shadow-lg hover:shadow-xl"
                 >
-                    Thử dùng OCR thay thế <ArrowRight className="w-5 h-5 ml-2" />
+                    Thử dùng OCR ngay <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
              </div>
         </div>
